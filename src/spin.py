@@ -17,7 +17,6 @@ class Spin:
     
     def result(self):
         res = self.current_spin
-        print(res)
 
         if len(res) == 0:
             return "Spin game first"

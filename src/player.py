@@ -19,3 +19,6 @@ class Player:
     
     def set_active(self, flag=True):
         self.is_active = flag
+
+    def update_balance(self, cost, profit):
+        self.balance += profit - cost
