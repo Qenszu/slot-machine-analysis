@@ -39,9 +39,10 @@ model metrics and simulations for different RTP parameters.
 ---
 
 ## 📁 Project Structure
-
+```
 slot-machine-analysis/
 ├── data/
 ├── notebooks/
 ├── src/
 └── README.md
+```
