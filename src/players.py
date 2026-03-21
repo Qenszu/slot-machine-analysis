@@ -6,8 +6,7 @@ class Players:
         self.id_count = 0
 
     def add_player(self, nick="", balance=0):
-        p = Player(self.id_count, nick, balance)
-        self.dict[self.id_count] = p
+        self.dict[self.id_count] = Player(self.id_count, nick, balance)
         self.id_count += 1
     
     def get_player(self, id):

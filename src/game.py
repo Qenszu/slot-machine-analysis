@@ -4,6 +4,7 @@ class Game:
         self.reels = reels
         self.num_reels = num_reels
         self.payouts = payouts
+        self.is_active = True
 
     def info(self):
         print("---- GAME INFO ----")
@@ -25,4 +26,7 @@ class Game:
     
     def get_payouts(self):
         return self.payouts
+    
+    def set_active(self, flag=True):
+        self.is_active = flag
     
