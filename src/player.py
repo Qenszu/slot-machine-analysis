@@ -19,18 +19,3 @@ class Player:
     
     def set_active(self, flag=True):
         self.is_active = flag
-    
-
-
-
-
-
-
-p1 = Player(1, "Qenszu", 100)
-p2 = Player(2, "", 8)
-
-p1.info()
-print(p1.current_balance())
-
-p2.info()
-print(p2.current_balance())
