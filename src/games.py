@@ -1,13 +1,15 @@
 from game import Game
 
 class Games:
-    def __init__(self):
+    def __init__(self, db):
         self.dict = {}
-        self.id_count = 0
+        self.db = db
 
     def add_game(self, name, reels, num_reels, payouts):
-        self.dict[self.id_count] = Game(name, reels, num_reels, payouts)
-        self.id_count += 1
+        g = Game(name, reels, num_reels, payouts)
+        id = self.db.add_game(g)
+        g.update_id(id)
+        self.dict[id] = g 
         
     def info(self):
         print("---- ALL GAMES INFO ----")

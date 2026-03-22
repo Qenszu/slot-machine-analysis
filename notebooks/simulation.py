@@ -60,3 +60,16 @@ players.add_player("Czarus", 1000)
 players.add_player("Kamil", 500)
 
 players.info()
+
+p = players.get_player(1)
+
+games = Games(db)
+games.add_game("777", reels, 3, payouts)
+games.info()
+
+g = games.get_game(1)
+spin = Spin(g)
+
+for i in range(30):
+    spin.start_spin()
+    db.add_spin(p, g, spin, 5)

@@ -1,10 +1,12 @@
 class Game:
     def __init__(self, name, reels, num_reels, payouts):
+        self.id = None
         self.name = name
         self.reels = reels
         self.num_reels = num_reels
         self.payouts = payouts
         self.is_active = True
+    
 
     def info(self):
         print("---- GAME INFO ----")
@@ -29,4 +31,7 @@ class Game:
     
     def set_active(self, flag=True):
         self.is_active = flag
+
+    def update_id(self, id):
+        self.id = id
     
