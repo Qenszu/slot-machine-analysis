@@ -1,13 +1,17 @@
 from player import Player
+from database import DatabaseManager
 
 class Players:
-    def __init__(self):
+    def __init__(self, db):
         self.dict = {}
-        self.id_count = 0
+        self.db = db
 
-    def add_player(self, nick="", balance=0):
-        self.dict[self.id_count] = Player(self.id_count, nick, balance)
-        self.id_count += 1
+    def add_player(self, nick, balance=0):
+        #TODO: validate unique nickname
+        p = Player(nick, balance)
+        id = self.db.add_player(p)
+        p.update_id(id)
+        self.dict[id] = p
     
     def get_player(self, id):
         return self.dict[id]
@@ -20,7 +24,7 @@ class Players:
         
         return counter
     
-    def players_info(self):
+    def info(self):
         for player in self.dict.values():
             player.info()
             print()

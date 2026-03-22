@@ -1,10 +1,7 @@
 class Player:
-    def __init__(self, player_id, nick="", balance=0):
-        self.player_id = player_id
-        if not nick:
-            self.nick = "newPlayer" + str(player_id)
-        else:
-            self.nick = nick
+    def __init__(self, nick, balance=0):
+        self.player_id = None
+        self.nick = nick
         self.balance = balance
         self.is_active = True
 
@@ -22,3 +19,6 @@ class Player:
 
     def update_balance(self, cost, profit):
         self.balance += profit - cost
+
+    def update_id(self, id):
+        self.player_id = id

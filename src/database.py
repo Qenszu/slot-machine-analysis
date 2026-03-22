@@ -1,4 +1,6 @@
 import sqlite3
+from datetime import datetime
+
 
 
 class DatabaseManager:
@@ -21,23 +23,54 @@ class DatabaseManager:
         """)
 
         self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS games (
+                game_id INTEGER PRIMARY KEY, 
+                add_date TEXT,
+                num_reels INTEGER
+            )
+        """)
+
+        self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS reels (
+                game_id INTEGER, 
+                symbol_name TEXT,
+                probability FLOAT,
+                payout FLOAT,
+                FOREIGN KEY (game_id) REFERENCES games(game_id)
+            )
+        """)
+
+        self.conn.execute("""
             CREATE TABLE IF NOT EXISTS spins (
                 spin_id INTEGER PRIMARY KEY, 
-                player_id INTEGER,
-                FOREIGN KEY (player_id) REFERENCES players(player_id) 
+                player_id INTEGER,              
                 game_id INTEGER,
                 date TEXT,
                 bet FLOAT,
-                win FLOAT
+                win FLOAT,
+                FOREIGN KEY (player_id) REFERENCES players(player_id),
+                FOREIGN KEY (game_id) REFERENCES games(game_id)
             )
         """)
 
         self.conn.execute("""
             CREATE TABLE IF NOT EXISTS spin_reels (
                 spin_id INTEGER,
-                FOREIGN KEY (spin_id) REFERENCES spins(spin_id)
                 reels_id INTEGER, 
-                result TEXT
+                result TEXT,
+                FOREIGN KEY (spin_id) REFERENCES spins(spin_id)
             )
         """)
         self.conn.commit()
+
+    def add_player(self, player):
+        cursor = self.conn.execute("""
+            INSERT INTO players (nickname, join_date, is_active) 
+            VALUES (?, ?, ?)
+        """, (player.nick, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), True))
+        self.conn.commit()
+
+        return cursor.lastrowid
+
+
+
