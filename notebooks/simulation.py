@@ -56,11 +56,7 @@ db.create_tables()
 
 players = Players(db)
 players.add_player("Qenszu", 100)
-players.add_player("Czarus", 1000)
-players.add_player("Kamil", 500)
-
 players.info()
-
 p = players.get_player(1)
 
 games = Games(db)
@@ -70,6 +66,8 @@ games.info()
 g = games.get_game(1)
 spin = Spin(g)
 
-for i in range(30):
+session_id = db.start_session()
+for i in range(100):
     spin.start_spin()
-    db.add_spin(p, g, spin, 5)
+    db.add_spin(p, g, spin, session_id, 10)
+db.end_session(session_id)

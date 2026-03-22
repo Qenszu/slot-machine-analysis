@@ -32,6 +32,14 @@ class DatabaseManager:
         """)
 
         self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS sessions (
+                session_id INTEGER PRIMARY KEY,
+                start_time TEXT,
+                end_time TEXT               
+            )
+        """)
+
+        self.conn.execute("""
             CREATE TABLE IF NOT EXISTS reels (
                 game_id INTEGER, 
                 symbol_name TEXT,
@@ -46,11 +54,13 @@ class DatabaseManager:
                 spin_id INTEGER PRIMARY KEY, 
                 player_id INTEGER,              
                 game_id INTEGER,
+                session_id INTEGER,
                 date TEXT,
                 bet FLOAT,
                 win FLOAT,
                 FOREIGN KEY (player_id) REFERENCES players(player_id),
                 FOREIGN KEY (game_id) REFERENCES games(game_id)
+                FOREIGN KEY (session_id) REFERENCES sessions(session_id)
             )
         """)
 
@@ -90,11 +100,11 @@ class DatabaseManager:
         self.conn.commit()
         return last_id
     
-    def add_spin(self, player, game, spin, bet):
+    def add_spin(self, player, game, spin, session_id, bet):
         cursor = self.conn.execute("""
-            INSERT INTO spins (player_id, game_id, date, bet, win)
-            VALUES(?, ?, ?, ?, ?)
-            """, (player.id, game.id, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), bet, spin.result()))
+            INSERT INTO spins (player_id, game_id, session_id, date, bet, win)
+            VALUES(?, ?, ?, ?, ?, ?)
+            """, (player.id, game.id, session_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), bet, spin.result()))
         
         last_id = cursor.lastrowid
         
@@ -106,6 +116,19 @@ class DatabaseManager:
         
         self.conn.commit()
 
+    def start_session(self):
+        cursor = self.conn.execute("""
+            INSERT INTO sessions (start_time)
+                VALUES(?)
+                """, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"),)) #comma (',') because python need here tuple
+        
+        self.conn.commit()
+        return cursor.lastrowid
+    
+    def end_session(self, session_id):
+        self.conn.execute("""
+            UPDATE sessions SET end_time = ? WHERE session_id = ?
+                """, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), session_id))
 
-
+        self.conn.commit()
 
