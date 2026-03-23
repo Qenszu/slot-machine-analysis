@@ -1,6 +1,9 @@
+import random
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+from datetime import datetime, timedelta
+
 from game import Game
 from games import Games
 from player import Player
@@ -55,19 +58,25 @@ db.connect()
 db.create_tables()
 
 players = Players(db)
-players.add_player("Qenszu", 100)
-players.info()
-p = players.get_player(1)
+
+for i in range(100):
+    players.add_player(f"Player{i+1}", 1000)
 
 games = Games(db)
 games.add_game("777", reels, 3, payouts)
-games.info()
+#games.info()
 
 g = games.get_game(1)
 spin = Spin(g)
 
-session_id = db.start_session()
-for i in range(100):
-    spin.start_spin()
-    db.add_spin(p, g, spin, session_id, 10)
-db.end_session(session_id)
+
+for i in range(20):
+    p = players.get_player(i+1)
+    print("Player: ", i+1)
+    start_time = datetime.now()
+    session_id = db.start_session(start_time.strftime("%Y-%m-%d %H:%M:%S"))
+    for j in range(1000):
+        spin_time = start_time + timedelta(seconds=j * random.uniform(3, 8))
+        spin.start_spin()
+        db.add_spin(p, g, spin, session_id, 10, spin_time.strftime("%Y-%m-%d %H:%M:%S"))
+    db.end_session(session_id, spin_time.strftime("%Y-%m-%d %H:%M:%S"))

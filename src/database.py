@@ -1,5 +1,6 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
+import random
 
 
 
@@ -100,11 +101,11 @@ class DatabaseManager:
         self.conn.commit()
         return last_id
     
-    def add_spin(self, player, game, spin, session_id, bet):
+    def add_spin(self, player, game, spin, session_id, bet, timestamp):
         cursor = self.conn.execute("""
             INSERT INTO spins (player_id, game_id, session_id, date, bet, win)
             VALUES(?, ?, ?, ?, ?, ?)
-            """, (player.id, game.id, session_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), bet, spin.result()))
+            """, (player.id, game.id, session_id, timestamp, bet, bet * spin.result()))
         
         last_id = cursor.lastrowid
         
@@ -116,19 +117,19 @@ class DatabaseManager:
         
         self.conn.commit()
 
-    def start_session(self):
+    def start_session(self, timestamp):
         cursor = self.conn.execute("""
             INSERT INTO sessions (start_time)
                 VALUES(?)
-                """, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"),)) #comma (',') because python need here tuple
+                """, (timestamp,)) #comma (',') because python need here tuple
         
         self.conn.commit()
         return cursor.lastrowid
     
-    def end_session(self, session_id):
+    def end_session(self, session_id, timestamp):
         self.conn.execute("""
             UPDATE sessions SET end_time = ? WHERE session_id = ?
-                """, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), session_id))
+                """, (timestamp, session_id))
 
         self.conn.commit()
 
