@@ -53,14 +53,30 @@ print(mean, maxi, mini)
 """
 
 
+def quit_probability(ratio):
+    if ratio <= 0:
+        return 1
+    elif 1 <= ratio <= 1.05:
+        return 0.05
+    elif ratio > 1.05:
+        return min(1, ratio - 1)
+    
+    return (1 - ratio)/2
+
+
+
+
+
+
 db = DatabaseManager("data/casino_sim.db")
 db.connect()
 db.create_tables()
 
 players = Players(db)
+start_balance = 1000
 
-for i in range(100):
-    players.add_player(f"Player{i+1}", 1000)
+for i in range(1000):
+    players.add_player(f"Player{i+1}", start_balance)
 
 games = Games(db)
 games.add_game("777", reels, 3, payouts)
@@ -69,14 +85,22 @@ games.add_game("777", reels, 3, payouts)
 g = games.get_game(1)
 spin = Spin(g)
 
+spins = 1000
 
-for i in range(20):
+
+for i in range(1000):
     p = players.get_player(i+1)
     print("Player: ", i+1)
     start_time = datetime.now()
     session_id = db.start_session(start_time.strftime("%Y-%m-%d %H:%M:%S"))
-    for j in range(1000):
+    for j in range(spins):
         spin_time = start_time + timedelta(seconds=j * random.uniform(3, 8))
         spin.start_spin()
         db.add_spin(p, g, spin, session_id, 10, spin_time.strftime("%Y-%m-%d %H:%M:%S"))
+        p.update_balance(10, 10*spin.result())
+        ratio = p.balance/start_balance
+        if random.random() < quit_probability(ratio):
+            break
+
     db.end_session(session_id, spin_time.strftime("%Y-%m-%d %H:%M:%S"))
+    
